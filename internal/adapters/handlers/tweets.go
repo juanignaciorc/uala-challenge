@@ -22,15 +22,22 @@ func (h *TweetHandler) CreateTweet(ctx *gin.Context) {
 
 	var body CreateTweetBody
 	if err := ctx.ShouldBindJSON(&body); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, NewErrorResponseWithCode(err.Error(), "INVALID_REQUEST_BODY"))
 		return
 	}
 
-	tweet, err := h.service.CreateTweet(ctx, uuid.MustParse(userID), body.Message)
+	parsedUserID, err := uuid.Parse(userID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, NewErrorResponseWithCode("Invalid user ID", "INVALID_USER_ID"))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Tweet created successfully", "tweet": tweet})
+	tweet, err := h.service.CreateTweet(ctx, parsedUserID, body.Message)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, NewErrorResponse(err.Error()))
+		return
+	}
+
+	response := NewSuccessResponse("Tweet created successfully", ToTweetResponseSimple(tweet))
+	ctx.JSON(http.StatusOK, response)
 }

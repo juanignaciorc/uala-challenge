@@ -45,7 +45,7 @@ func TestUserHandler_Create(t *testing.T) {
 					Return(domain.User{ID: uuid.MustParse(userUuidMock), Name: "John Doe", Email: "john@example.com"}, nil)
 			},
 			expectedStatusCode: http.StatusOK,
-			expectedResponse:   fmt.Sprintf(`{"message":"User created successfully","user":{"id":"%s","name":"John Doe","email":"john@example.com","followers":null,"following":null,"tweets":null}}`, userUuidMock),
+			expectedResponse:   fmt.Sprintf(`{"message":"User created successfully","data":{"id":"%s","name":"John Doe","email":"john@example.com","followers_count":0,"following_count":0,"tweets_count":0}}`, userUuidMock),
 		},
 		{
 			name:        "Failure - Service error",
@@ -129,7 +129,7 @@ func TestUserHandler_Get(t *testing.T) {
 					Return(domain.User{ID: uuid.MustParse(userUuidMock), Name: "John Doe", Email: "john@example.com"}, nil)
 			},
 			expectedStatusCode: http.StatusOK,
-			expectedResponse:   fmt.Sprintf(`{"user":{"id":"%s","name":"John Doe","email":"john@example.com","followers":null,"following":null,"tweets":null}}`, userUuidMock),
+			expectedResponse:   fmt.Sprintf(`{"message":"User retrieved successfully","data":{"id":"%s","name":"John Doe","email":"john@example.com","followers_count":0,"following_count":0,"tweets_count":0}}`, userUuidMock),
 		},
 		{
 			name:   "Failure - Service error",
@@ -147,7 +147,7 @@ func TestUserHandler_Get(t *testing.T) {
 			userID:             "invalid-uuid",
 			setupMock:          func() {},
 			expectedStatusCode: http.StatusBadRequest,
-			expectedResponse:   `{"error":"Invalid user ID"}`,
+			expectedResponse:   `{"error":"Invalid user ID","code":"INVALID_USER_ID"}`,
 		},
 	}
 
@@ -227,7 +227,7 @@ func TestUserHandler_FollowUser(t *testing.T) {
 			followedUserID:     followedUserUuidMock,
 			setupMock:          func() {},
 			expectedStatusCode: http.StatusBadRequest,
-			expectedResponse:   `{"error":"Invalid user ID"}`,
+			expectedResponse:   `{"error":"Invalid user ID","code":"INVALID_USER_ID"}`,
 		},
 		{
 			name:               "Failure - Invalid followed user ID",
@@ -235,7 +235,7 @@ func TestUserHandler_FollowUser(t *testing.T) {
 			followedUserID:     "invalid-uuid",
 			setupMock:          func() {},
 			expectedStatusCode: http.StatusBadRequest,
-			expectedResponse:   `{"error":"Invalid followed user ID"}`,
+			expectedResponse:   `{"error":"Invalid followed user ID","code":"INVALID_FOLLOWED_USER_ID"}`,
 		},
 	}
 
@@ -297,7 +297,7 @@ func TestUserHandler_GetUserTimeline(t *testing.T) {
 					Return(tweets, nil)
 			},
 			expectedStatusCode: http.StatusOK,
-			expectedResponse:   fmt.Sprintf(`{"tweets":[{"id":"%s","user_id":"00000000-0000-0000-0000-000000000000","message":"Hello World"}]}`, userUuidMock),
+			expectedResponse:   fmt.Sprintf(`{"message":"Timeline retrieved successfully","data":[{"id":"%s","message":"Hello World","user":{"id":"00000000-0000-0000-0000-000000000000","name":""}}]}`, userUuidMock),
 		},
 		{
 			name:   "Success - Empty timeline",
@@ -308,7 +308,7 @@ func TestUserHandler_GetUserTimeline(t *testing.T) {
 					Return([]domain.Tweet{}, nil)
 			},
 			expectedStatusCode: http.StatusOK,
-			expectedResponse:   `{"tweets":[]}`,
+			expectedResponse:   `{"message":"Timeline retrieved successfully","data":[]}`,
 		},
 		{
 			name:   "Failure - Service error",
@@ -326,7 +326,7 @@ func TestUserHandler_GetUserTimeline(t *testing.T) {
 			userID:             "invalid-uuid",
 			setupMock:          func() {},
 			expectedStatusCode: http.StatusBadRequest,
-			expectedResponse:   `{"error":"Invalid user ID"}`,
+			expectedResponse:   `{"error":"Invalid user ID","code":"INVALID_USER_ID"}`,
 		},
 	}
 

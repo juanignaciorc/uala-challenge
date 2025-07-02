@@ -29,17 +29,18 @@ type CreateTweetBody struct {
 func (h UserHandler) Create(ctx *gin.Context) {
 	var body CreateUserBody
 	if err := ctx.ShouldBindJSON(&body); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, NewErrorResponseWithCode(err.Error(), "INVALID_REQUEST_BODY"))
 		return
 	}
 
 	user, err := h.service.CreateUser(ctx, body.Name, body.Email)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, NewErrorResponse(err.Error()))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "User created successfully", "user": user})
+	response := NewSuccessResponse("User created successfully", ToUserDetailResponse(user))
+	ctx.JSON(http.StatusOK, response)
 }
 
 func (h UserHandler) Get(ctx *gin.Context) {
@@ -47,17 +48,18 @@ func (h UserHandler) Get(ctx *gin.Context) {
 
 	userID, err := uuid.Parse(userIDStr)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		ctx.JSON(http.StatusBadRequest, NewErrorResponseWithCode("Invalid user ID", "INVALID_USER_ID"))
 		return
 	}
 
 	user, err := h.service.GetUser(ctx, userID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, NewErrorResponse(err.Error()))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"user": user})
+	response := NewSuccessResponse("User retrieved successfully", ToUserDetailResponse(user))
+	ctx.JSON(http.StatusOK, response)
 }
 
 func (h UserHandler) FollowUser(ctx *gin.Context) {
@@ -65,7 +67,7 @@ func (h UserHandler) FollowUser(ctx *gin.Context) {
 
 	userID, err := uuid.Parse(userIDStr)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		ctx.JSON(http.StatusBadRequest, NewErrorResponseWithCode("Invalid user ID", "INVALID_USER_ID"))
 		return
 	}
 
@@ -73,16 +75,17 @@ func (h UserHandler) FollowUser(ctx *gin.Context) {
 
 	followedUserID, err := uuid.Parse(followedUserIDStr)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid followed user ID"})
+		ctx.JSON(http.StatusBadRequest, NewErrorResponseWithCode("Invalid followed user ID", "INVALID_FOLLOWED_USER_ID"))
 		return
 	}
 
 	if err := h.service.FollowUser(ctx, userID, followedUserID); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, NewErrorResponse(err.Error()))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "User followed successfully"})
+	response := NewSuccessResponse("User followed successfully", nil)
+	ctx.JSON(http.StatusOK, response)
 }
 
 func (h UserHandler) GetUserTimeline(ctx *gin.Context) {
@@ -90,15 +93,22 @@ func (h UserHandler) GetUserTimeline(ctx *gin.Context) {
 
 	userID, err := uuid.Parse(userIDStr)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		ctx.JSON(http.StatusBadRequest, NewErrorResponseWithCode("Invalid user ID", "INVALID_USER_ID"))
 		return
 	}
 
 	tweets, err := h.service.GetUserTimeline(ctx, userID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, NewErrorResponse(err.Error()))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"tweets": tweets})
+	// Convert tweets to response DTOs
+	tweetResponses := make([]TweetResponse, len(tweets))
+	for i, tweet := range tweets {
+		tweetResponses[i] = ToTweetResponseSimple(tweet)
+	}
+
+	response := NewSuccessResponse("Timeline retrieved successfully", tweetResponses)
+	ctx.JSON(http.StatusOK, response)
 }

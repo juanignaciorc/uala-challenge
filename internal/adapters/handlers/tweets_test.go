@@ -47,7 +47,7 @@ func TestTweetHandler_CreateTweet(t *testing.T) {
 					Return(domain.Tweet{ID: uuid.MustParse(uuidMock), Message: "Tweet created successfully"}, nil)
 			},
 			expectedStatusCode: http.StatusOK,
-			expectedResponse:   fmt.Sprintf(`{"message":"Tweet created successfully","tweet":{"id":"%s","user_id":"00000000-0000-0000-0000-000000000000","message":"Tweet created successfully"}}`, uuidMock),
+			expectedResponse:   fmt.Sprintf(`{"message":"Tweet created successfully","data":{"id":"%s","message":"Tweet created successfully","user":{"id":"00000000-0000-0000-0000-000000000000","name":""}}}`, uuidMock),
 		},
 		{
 			name:        "Failure - Service error",
