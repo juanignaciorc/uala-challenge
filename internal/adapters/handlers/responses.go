@@ -43,14 +43,6 @@ type SuccessResponse struct {
 
 // Helper functions to convert domain objects to response DTOs
 
-func ToUserResponse(user domain.User) UserResponse {
-	return UserResponse{
-		ID:   user.ID,
-		Name: user.Name,
-		// Email is intentionally omitted for privacy
-	}
-}
-
 func ToUserDetailResponse(user domain.User) UserDetailResponse {
 	return UserDetailResponse{
 		ID:             user.ID,
@@ -82,13 +74,6 @@ func NewErrorResponseWithCode(message, code string) ErrorResponse {
 	return ErrorResponse{
 		Error: message,
 		Code:  code,
-	}
-}
-
-func NewErrorResponseWithDetails(message string, details map[string]string) ErrorResponse {
-	return ErrorResponse{
-		Error:   message,
-		Details: details,
 	}
 }
 
