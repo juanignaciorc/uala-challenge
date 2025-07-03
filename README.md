@@ -1,6 +1,6 @@
 # Microblogging Platform
 
-Esta es una plataforma de microblogging desarrollada en Go con PostgreSQL como base de datos y opcionalmente se puede ejecutar con una base de datos en memoria. La aplicación está completamente dockerizada y se puede ejecutar con un simple comando.
+Esta es una plataforma de microblogging desarrollada en Go con PostgreSQL como base de datos y opcionalmente se puede ejecutar sin usar docker con una base de datos en memoria. La aplicación está completamente dockerizada y se puede ejecutar con un simple comando en ambos casos.
 
 ## Requisitos Previos
 
