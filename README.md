@@ -32,9 +32,9 @@ Este comando:
 ## Servicios
 
 ### API
-- **Puerto (Docker)**: `8082`
+- **Puerto (Docker)**: `8080`
 - **Puerto (Local)**: `8080`
-- **Base URL (Docker)**: `http://localhost:8082`
+- **Base URL (Docker)**: `http://localhost:8080`
 - **Base URL (Local)**: `http://localhost:8080`
 
 ### PostgreSQL (Solo Docker)
@@ -55,7 +55,7 @@ A continuación se detallan los endpoints disponibles con ejemplos usando curl:
 ### 1. Verificar conexión (Ping)
 ```bash
 # Docker
-curl -X GET http://localhost:8082/ping
+curl -X GET http://localhost:8080/ping
 
 # Local
 curl -X GET http://localhost:8080/ping
@@ -64,7 +64,7 @@ curl -X GET http://localhost:8080/ping
 ### 2. Crear Usuario
 ```bash
 # Docker
-curl -X POST http://localhost:8082/api/v1/users \
+curl -X POST http://localhost:8080/api/v1/users \
   -H "Content-Type: application/json" \
   -d '{"name":"Juan Pérez","email":"juan@example.com"}'
 
@@ -77,7 +77,7 @@ curl -X POST http://localhost:8080/api/v1/users \
 ### 3. Obtener Usuario por ID
 ```bash
 # Docker
-curl -X GET http://localhost:8082/api/v1/users/{userID}
+curl -X GET http://localhost:8080/api/v1/users/{userID}
 
 # Local
 curl -X GET http://localhost:8080/api/v1/users/{userID}
@@ -86,7 +86,7 @@ curl -X GET http://localhost:8080/api/v1/users/{userID}
 ### 4. Publicar Tweet
 ```bash
 # Docker
-curl -X POST http://localhost:8082/api/v1/users/{userID}/tweet \
+curl -X POST http://localhost:8080/api/v1/users/{userID}/tweet \
   -H "Content-Type: application/json" \
   -d '{"message":"Mi primer tweet desde Docker!"}'
 
@@ -99,7 +99,7 @@ curl -X POST http://localhost:8080/api/v1/users/{userID}/tweet \
 ### 5. Seguir a un Usuario
 ```bash
 # Docker
-curl -X POST http://localhost:8082/api/v1/users/{followerID}/follow/{followedID}
+curl -X POST http://localhost:8080/api/v1/users/{followerID}/follow/{followedID}
 
 # Local
 curl -X POST http://localhost:8080/api/v1/users/{followerID}/follow/{followedID}
@@ -108,7 +108,7 @@ curl -X POST http://localhost:8080/api/v1/users/{followerID}/follow/{followedID}
 ### 6. Obtener Timeline de Usuario
 ```bash
 # Docker
-curl -X GET http://localhost:8082/api/v1/users/{userID}/timeline
+curl -X GET http://localhost:8080/api/v1/users/{userID}/timeline
 
 # Local
 curl -X GET http://localhost:8080/api/v1/users/{userID}/timeline
@@ -155,7 +155,7 @@ La base de datos se inicializa automáticamente con las siguientes tablas:
 La aplicación utiliza las siguientes variables de entorno:
 
 - `DATABASE_URL`: Cadena de conexión a PostgreSQL
-- `PORT`: Puerto donde corre la aplicación (8082 en Docker, 8080 en local)
+- `PORT`: Puerto donde corre la aplicación (8080 en Docker, 8080 en local)
 
 ### Reiniciar desde cero
 ```bash
