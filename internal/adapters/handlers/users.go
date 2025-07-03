@@ -59,7 +59,7 @@ func (h UserHandler) Get(ctx *gin.Context) {
 	}
 
 	response := NewSuccessResponse("User retrieved successfully", ToUserDetailResponse(user))
-	ctx.JSON(http.StatusOK, response)
+	ctx.JSON(http.StatusCreated, response)
 }
 
 func (h UserHandler) FollowUser(ctx *gin.Context) {
@@ -85,7 +85,7 @@ func (h UserHandler) FollowUser(ctx *gin.Context) {
 	}
 
 	response := NewSuccessResponse("User followed successfully", nil)
-	ctx.JSON(http.StatusOK, response)
+	ctx.JSON(http.StatusCreated, response)
 }
 
 func (h UserHandler) GetUserTimeline(ctx *gin.Context) {

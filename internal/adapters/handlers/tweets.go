@@ -39,5 +39,5 @@ func (h *TweetHandler) CreateTweet(ctx *gin.Context) {
 	}
 
 	response := NewSuccessResponse("Tweet created successfully", ToTweetResponseSimple(tweet))
-	ctx.JSON(http.StatusOK, response)
+	ctx.JSON(http.StatusCreated, response)
 }
