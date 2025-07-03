@@ -59,7 +59,7 @@ func (h UserHandler) Get(ctx *gin.Context) {
 	}
 
 	response := NewSuccessResponse("User retrieved successfully", ToUserDetailResponse(user))
-	ctx.JSON(http.StatusCreated, response)
+	ctx.JSON(http.StatusOK, response)
 }
 
 func (h UserHandler) FollowUser(ctx *gin.Context) {
