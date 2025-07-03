@@ -137,10 +137,10 @@ func TestUserHandler_Get(t *testing.T) {
 			setupMock: func() {
 				mockService.EXPECT().
 					GetUser(gomock.Any(), uuid.MustParse(userUuidMock)).
-					Return(domain.User{}, errors.New("user not found"))
+					Return(domain.User{}, errors.New("USER NOT FOUND"))
 			},
 			expectedStatusCode: http.StatusInternalServerError,
-			expectedResponse:   `{"error":"user not found"}`,
+			expectedResponse:   `{"error":"USER NOT FOUND"}`,
 		},
 		{
 			name:               "Failure - Invalid UUID",

@@ -54,7 +54,7 @@ func (h UserHandler) Get(ctx *gin.Context) {
 
 	user, err := h.service.GetUser(ctx, userID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, NewErrorResponse(err.Error()))
+		ctx.JSON(http.StatusInternalServerError, NewErrorResponse("USER NOT FOUND"))
 		return
 	}
 
