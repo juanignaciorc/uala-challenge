@@ -65,6 +65,13 @@ func (ur *UsersPGRepository) GetUser(ctx context.Context, id uuid.UUID) (domain.
 	}
 	user.Follwing = following
 
+	// Get user's tweets
+	tweets, err := ur.GetUserTweets(ctx, id)
+	if err != nil {
+		return domain.User{}, err
+	}
+	user.Tweets = tweets
+
 	return user, nil
 }
 
@@ -154,4 +161,28 @@ func (ur *UsersPGRepository) GetFollowerIDs(ctx context.Context, userID uuid.UUI
 	}
 
 	return followerIDs, nil
+}
+
+func (ur *UsersPGRepository) GetUserTweets(ctx context.Context, userID uuid.UUID) ([]domain.Tweet, error) {
+	var tweets []domain.Tweet
+
+	rows, err := ur.db.connPool.Query(ctx, "SELECT id, user_id, message FROM tweets WHERE user_id = $1", userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var tweet domain.Tweet
+		if err := rows.Scan(&tweet.ID, &tweet.UserID, &tweet.Message); err != nil {
+			return nil, err
+		}
+		tweets = append(tweets, tweet)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return tweets, nil
 }
