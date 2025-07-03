@@ -51,11 +51,25 @@ func (ur *UsersPGRepository) GetUser(ctx context.Context, id uuid.UUID) (domain.
 		return domain.User{}, err
 	}
 
+	// Get followers (people who follow this user)
+	followers, err := ur.GetFollowerIDs(ctx, id)
+	if err != nil {
+		return domain.User{}, err
+	}
+	user.Followers = followers
+
+	// Get following (people this user follows)
+	following, err := ur.GetFollowedUserIDs(ctx, id)
+	if err != nil {
+		return domain.User{}, err
+	}
+	user.Follwing = following
+
 	return user, nil
 }
 
 func (ur *UsersPGRepository) FollowUser(ctx context.Context, userID uuid.UUID, followedID uuid.UUID) error {
-	_, err := ur.db.connPool.Exec(ctx, "INSERT INTO followers (user_id, followed_id) VALUES ($1, $2)", userID, followedID)
+	_, err := ur.db.connPool.Exec(ctx, "INSERT INTO followers (follower_id, user_id) VALUES ($1, $2)", userID, followedID)
 	if err != nil {
 		return err
 	}
@@ -97,7 +111,7 @@ func (ur *UsersPGRepository) GetUserTimeline(ctx context.Context, userID uuid.UU
 func (ur *UsersPGRepository) GetFollowedUserIDs(ctx context.Context, userID uuid.UUID) ([]uuid.UUID, error) {
 	var followedUserIDs []uuid.UUID
 
-	rows, err := ur.db.connPool.Query(ctx, "SELECT followed_id FROM followers WHERE user_id = $1", userID)
+	rows, err := ur.db.connPool.Query(ctx, "SELECT user_id FROM followers WHERE follower_id = $1", userID)
 	if err != nil {
 		return nil, err
 	}
@@ -121,7 +135,7 @@ func (ur *UsersPGRepository) GetFollowedUserIDs(ctx context.Context, userID uuid
 func (ur *UsersPGRepository) GetFollowerIDs(ctx context.Context, userID uuid.UUID) ([]uuid.UUID, error) {
 	var followerIDs []uuid.UUID
 
-	rows, err := ur.db.connPool.Query(ctx, "SELECT user_id FROM followers WHERE followed_id = $1", userID)
+	rows, err := ur.db.connPool.Query(ctx, "SELECT follower_id FROM followers WHERE user_id = $1", userID)
 	if err != nil {
 		return nil, err
 	}
