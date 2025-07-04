@@ -24,7 +24,7 @@ func (h *TweetHandler) CreateTweet(ctx *gin.Context) {
 
 	var body CreateTweetBody
 	if err := ctx.ShouldBindJSON(&body); err != nil {
-		ctx.JSON(http.StatusBadRequest, NewErrorResponseWithCode(err.Error(), "INVALID_REQUEST_BODY"))
+		ctx.JSON(http.StatusBadRequest, NewErrorResponseWithCode(err.Error(), "EXCEEDED_MAX_TWEET_CHARACTERS"))
 		return
 	}
 
