@@ -20,7 +20,7 @@ func createHandlers(userRepo ports.UsersRepository, tweetRepo ports.TweetReposit
 	userHandler := handlers.NewUserHandler(userService)
 
 	tweetService := services.NewTweetsService(tweetRepo)
-	tweetHandler := handlers.NewTweetHandler(tweetService)
+	tweetHandler := handlers.NewTweetHandler(tweetService, userService)
 
 	return userHandler, tweetHandler
 }

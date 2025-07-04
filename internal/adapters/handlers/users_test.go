@@ -206,7 +206,7 @@ func TestUserHandler_FollowUser(t *testing.T) {
 					FollowUser(gomock.Any(), uuid.MustParse(userUuidMock), uuid.MustParse(followedUserUuidMock)).
 					Return(nil)
 			},
-			expectedStatusCode: http.StatusOK,
+			expectedStatusCode: http.StatusCreated,
 			expectedResponse:   `{"message":"User followed successfully"}`,
 		},
 		{

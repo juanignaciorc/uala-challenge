@@ -62,6 +62,17 @@ func ToTweetResponseSimple(tweet domain.Tweet) TweetResponse {
 	}
 }
 
+func ToTweetResponseWithUser(tweet domain.Tweet, user domain.User) TweetResponse {
+	return TweetResponse{
+		ID:      tweet.ID,
+		Message: tweet.Message,
+		User: UserResponse{
+			ID:   user.ID,
+			Name: user.Name,
+		},
+	}
+}
+
 // Error helper functions
 
 func NewErrorResponse(message string) ErrorResponse {

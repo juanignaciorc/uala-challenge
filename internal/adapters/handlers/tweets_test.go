@@ -23,10 +23,11 @@ func TestTweetHandler_CreateTweet(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockService := mock_ports.NewMockTweetService(ctrl)
+	mockTweetService := mock_ports.NewMockTweetService(ctrl)
+	mockUserService := mock_ports.NewMockUserService(ctrl)
 
-	// Create the handler with the mock service
-	handler := NewTweetHandler(mockService)
+	// Create the handler with the mock services
+	handler := NewTweetHandler(mockTweetService, mockUserService)
 
 	tests := []struct {
 		name               string
@@ -41,20 +42,24 @@ func TestTweetHandler_CreateTweet(t *testing.T) {
 			userID:      uuid.MustParse(uuidMock),
 			requestBody: map[string]string{"message": "Tweet created successfully"},
 			setupMock: func() {
-				// Set up the expected behavior for the mock
-				mockService.EXPECT().
+				// Set up the expected behavior for the mocks
+				mockTweetService.EXPECT().
 					CreateTweet(gomock.Any(), gomock.Any(), "Tweet created successfully").
-					Return(domain.Tweet{ID: uuid.MustParse(uuidMock), Message: "Tweet created successfully"}, nil)
+					Return(domain.Tweet{ID: uuid.MustParse(uuidMock), UserID: uuid.MustParse(uuidMock), Message: "Tweet created successfully"}, nil)
+
+				mockUserService.EXPECT().
+					GetUser(gomock.Any(), uuid.MustParse(uuidMock)).
+					Return(domain.User{ID: uuid.MustParse(uuidMock), Name: "Test User"}, nil)
 			},
-			expectedStatusCode: http.StatusOK,
-			expectedResponse:   fmt.Sprintf(`{"message":"Tweet created successfully","data":{"id":"%s","message":"Tweet created successfully","user":{"id":"00000000-0000-0000-0000-000000000000","name":""}}}`, uuidMock),
+			expectedStatusCode: http.StatusCreated,
+			expectedResponse:   fmt.Sprintf(`{"message":"Tweet created successfully","data":{"id":"%s","message":"Tweet created successfully","user":{"id":"%s","name":"Test User"}}}`, uuidMock, uuidMock),
 		},
 		{
 			name:        "Failure - Service error",
 			userID:      uuid.MustParse(uuidMock),
 			requestBody: map[string]string{"message": "Hello, Error!"},
 			setupMock: func() {
-				mockService.EXPECT().
+				mockTweetService.EXPECT().
 					CreateTweet(gomock.Any(), gomock.Any(), "Hello, Error!").
 					Return(domain.Tweet{}, errors.New("service error"))
 			},

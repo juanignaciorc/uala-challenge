@@ -8,12 +8,14 @@ import (
 )
 
 type TweetHandler struct {
-	service services.TweetService
+	service     services.TweetService
+	userService services.UserService
 }
 
-func NewTweetHandler(service services.TweetService) *TweetHandler {
+func NewTweetHandler(service services.TweetService, userService services.UserService) *TweetHandler {
 	return &TweetHandler{
-		service: service,
+		service:     service,
+		userService: userService,
 	}
 }
 
@@ -38,6 +40,13 @@ func (h *TweetHandler) CreateTweet(ctx *gin.Context) {
 		return
 	}
 
-	response := NewSuccessResponse("Tweet created successfully", ToTweetResponseSimple(tweet))
+	// Fetch user information to include in the response
+	user, err := h.userService.GetUser(ctx, parsedUserID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, NewErrorResponse(err.Error()))
+		return
+	}
+
+	response := NewSuccessResponse("Tweet created successfully", ToTweetResponseWithUser(tweet, user))
 	ctx.JSON(http.StatusCreated, response)
 }
