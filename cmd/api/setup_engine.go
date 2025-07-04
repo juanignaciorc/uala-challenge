@@ -18,7 +18,6 @@ func SetupEngine() *gin.Engine {
 	router := gin.New()
 	router.Use(gin.Logger())
 
-	// Get database URL from environment variable
 	databaseURL := os.Getenv("DATABASE_URL")
 	if databaseURL == "" {
 		log.Println("DATABASE_URL not set, using in-memory database")

@@ -7,7 +7,7 @@ import (
 )
 
 func StartServer(router *gin.Engine) {
-	if err := router.Run(":8082"); err != nil {
+	if err := router.Run(":8080"); err != nil {
 		log.Fatal("error running server", []error{err})
 	}
 }
